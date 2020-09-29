@@ -47,7 +47,7 @@ sub levenshtein
         {
             # Set the cost to 1 iff the ith char of $s1
             # equals the jth of $s2
-            # 
+            #
             # Denotes a substitution cost. When the char are equal
             # there is no need to substitute, so the cost is 0
             #
@@ -99,7 +99,7 @@ sub levenshtein
 sub min
 {
     my @list = @{$_[0]};
-    my $min = $list[0];
+    my $min = shift @list;
 
     foreach my $i (@list)
     {

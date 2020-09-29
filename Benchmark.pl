@@ -108,8 +108,8 @@ sub test_length_regex {	 }
 
 #sub job { return (rand>0) ? 1 : 0; }
 sub job { return rand; }
-sub word { return 'Taumatawhakatangihangakoauauotamateaturipukakapikimaungahoronukupokaiwhenuakitanatahu'; }
-sub sets { my ($N)=@_; my $box[]; push(@box, &job() ) foreach (1 .. $N); return $box; }
+sub sets { my ($N)=@_; my @box=(); push(@box, &job() ) foreach (1 .. $N); return \@box; }
+sub word { my @seed=split //,' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~'; return ''; }
 sub mean { return (length(@_)==0) ? -1234 : (sum(@_)/length(@_)); }
 sub sum { my $ans=0; $ans+=$_ foreach (@_); return $ans; }
 sub dev { my ($x,$xhat,$n) = @_; return ($x-$xhat)/$n; }

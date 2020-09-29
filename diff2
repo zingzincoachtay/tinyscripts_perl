@@ -2,30 +2,33 @@
 use strict;
 require "ldperl.pl";
 
-if( check_argc_exit($#ARGV) ){
-  print "Only exactly two folders must be given to the arguments.\n" && exit;
-} else {}
+if( !check_argc_exit($#ARGV) ){
+  print "Only exactly two folders must be given to the arguments.\n"
+  print "./diff2  [FOLDER_FROM] [FOLDER_TO] \n"
+  exit;
+}
 
 switch_methods(@ARGV);
 
 sub check_argc_exit {
-  return ($#ARGV<1 || $#ARGV>1) ? 1 : 0;
+  return ($_[0]==2) ? 1 : 0;
 }
 sub switch_methods {
-  my ($target_object,$likely_destination) = @_;
-  if(-f $target_object && -f $likely_destination){
-    print 'Recommend using `diff -q "'.$target_object.'" "'.$likely_destination.'"`'."\n" && exit;
+  my ($target_from,$likely_to) = @_;
+  if(-f $target_from && -f $likely_to){
+    print 'Recommend  `diff -q "'.$target_from.'" "'.$likely_to.'"`'."\n" && exit;
   }
-  if(-d $target_object && -f $likely_destination){
-    print 'Redo execution  `perl $0 "'.$likely_destination.'" "'.$target_object.'"`'."\n" && exit;
+  if(-d $target_from && -f $likely_to){
+    print 'Running as  `./$0 "'.$likely_to.'" "'.$target_from.'"`'."\n";
+    ($target_from,$likely_to) = ($likely_to,$target_from);
   }
   #one-file to one-folder
-  if(-f $target_object && -d $likely_destination){
-    file_to_folder($target_object , $likely_destination);
+  if(-f $target_from && -d $likely_to){
+    file_to_folder($target_from , $likely_to);
   }
   #one-folder to one-folder is EQUAL to EACH-file to one-folder
-  if(-d $target_object && -d $likely_destination){
-    folder_to_folder($target_object , $likely_destination);
+  if(-d $target_from && -d $likely_to){
+    folder_to_folder($target_from , $likely_to);
   }
   return 1;
 }
@@ -40,24 +43,21 @@ sub file_to_folder {
 sub openRecursiveGenieByFilenames {
   my ($session) = @_;
   while(my $lookupdir = shift @{$session->{'d'}}){
-    $files_uD = crawler($lookupdir,{},{});
+    $files_uD = crawler($lookupdir,[],[]);
   }
   return $files_uD;
 }
 sub crawler {
-  my ($d,$fh,$h) = @_;
+  my ($d,$fnr,$dnr) = @_;
   opendir(my $dh,$d) || die "Can't opendir $d: $!";
-  my @files,@dirs;
+  #my @files,@dirs;
   while (readdir $dh) {
-    push(@files,"$d/$_") if -f "$d/$_";
-    push(@dirs,"$d/$_/") if -d "$d/$_";
+    push(@$fnr,"$d/$_")  if -f "$d/$_";
+    push(@$dnr,"$d/$_/") if -d "$d/$_";
   }
   closedir $dh;
-  $fh->{$_} = 1 foreach @files;
-  my $lookupdir = shift  @dirs;
-  $h->{$_} = 1  foreach  @dirs;
-  if( length(@dirs)>0 ){return crawler($lookupdir,$fh,$h);}
-  return $fh;
+  if( shift @$dnr ){return crawler($_,$fnr,$dnr);}
+  return $fnr;
 }
 sub finalScoreGenie {
   my ($h,$scoreSheet) = @_;
