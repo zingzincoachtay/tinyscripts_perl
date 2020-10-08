@@ -114,6 +114,3 @@ sub mean { return (length(@_)==0) ? -1234 : (sum(@_)/length(@_)); }
 sub sum { my $ans=0; $ans+=$_ foreach (@_); return $ans; }
 sub dev { my ($x,$xhat,$n) = @_; return ($x-$xhat)/$n; }
 sub fastest { my $Flash=["",0]; while(my($key,$val)=each(%{$_})){ $Flash=[$key,$val] if $$Flash[0] eq "" || $val<$$Flash[1]; } return $Flash; }
-sub pseudo {
-  
-}
