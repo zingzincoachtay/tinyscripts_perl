@@ -49,6 +49,7 @@ sub crawler {
   opendir(my $dh,$d) || die "Can't opendir $d: $!";
   my @files,@dirs;
   while (readdir $dh) {
+    next if /^\.{1,2}$/;
     push(@files,"$d/$_") if -f "$d/$_";
     push(@dirs,"$d/$_/") if -d "$d/$_";
   }
